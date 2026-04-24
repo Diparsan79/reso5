@@ -18,17 +18,7 @@ i wanted to make a frontend for my API that i made through the week 4 but i have
 ## running
 
 ```
-fastapi dev src/resolution_week5_YOUR_USERNAME/main.py
+fastapi dev src/resolution_week5_flameX/main.py
 ```
 
 then open http://127.0.0.1:8000
-
-## screenshot
-
-<!-- add a screenshot here before submitting -->
-
-## built with
-
-- fastapi + sqlite (backend)
-- brython (frontend, python in the browser)
-- slowapi (rate limiting)
