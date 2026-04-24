@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>मेरो Watchlist</title>
+    <script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #1a1a1a;
+            color: #e0e0e0;
+            font-family: Georgia, serif;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #111;
+            border-bottom: 2px solid #00c030;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        header h1 { color: #00c030; font-size: 1.3rem; letter-spacing: 1px; }
+        header span { color: #666; font-size: 0.8rem; font-family: monospace; }
+
+        #key-status {
+            margin-left: auto;
+            font-size: 0.75rem;
+            font-family: monospace;
+            color: #888;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        #flash {
+            font-family: monospace;
+            font-size: 0.8rem;
+            padding: 8px 12px;
+            margin-bottom: 16px;
+            display: none;
+            border-left: 3px solid #00c030;
+            background: #222;
+            color: #ccc;
+        }
+        #flash.err { border-color: #e03030; color: #f88; }
+
+        .panel {
+            background: #222;
+            border: 1px solid #333;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .panel-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #00c030;
+            margin-bottom: 12px;
+            font-family: monospace;
+        }
+
+        input, select {
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: #111;
+            border: 1px solid #444;
+            color: #ddd;
+            padding: 7px 10px;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+        input:focus, select:focus { outline: none; border-color: #00c030; }
+
+        button {
+            font-family: monospace;
+            font-size: 0.8rem;
+            padding: 7px 16px;
+            cursor: pointer;
+            border: none;
+            background: #00c030;
+            color: #111;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+        button:hover { background: #00e040; }
+
+        button.ghost {
+            background: transparent;
+            border: 1px solid #555;
+            color: #aaa;
+        }
+        button.ghost:hover { border-color: #aaa; color: #ddd; background: transparent; }
+
+        button.red { background: #c03030; color: #fff; }
+        button.red:hover { background: #e03030; }
+
+        button.tiny { font-size: 0.72rem; padding: 4px 10px; }
+
+        .reg-row { display: flex; gap: 8px; }
+        .reg-row input { margin-bottom: 0; flex: 1; }
+
+        #stats-row { display: flex; gap: 20px; flex-wrap: wrap; }
+        .stat { text-align: center; }
+        .stat-n { font-size: 1.6rem; color: #00c030; font-family: monospace; display: block; }
+        .stat-l { font-size: 0.7rem; color: #777; font-family: monospace; text-transform: uppercase; }
+
+        .add-grid {
+            display: grid;
+            grid-template-columns: 1fr 120px 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .add-grid input, .add-grid select { margin-bottom: 0; }
+
+        .filter-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .filter-row input { flex: 1; min-width: 140px; margin-bottom: 0; }
+        .filter-row select { width: 130px; margin-bottom: 0; }
+
+        .movie-card {
+            border-bottom: 1px solid #2a2a2a;
+            padding: 12px 0;
+        }
+        .movie-card:last-child { border-bottom: none; }
+
+        .card-title { font-size: 1rem; color: #fff; margin-bottom: 4px; }
+        .card-meta { font-size: 0.72rem; color: #666; font-family: monospace; margin-bottom: 6px; }
+
+        .badge {
+            font-size: 0.65rem;
+            font-family: monospace;
+            padding: 2px 6px;
+            margin-right: 4px;
+        }
+        .badge-watched { background: #00c030; color: #111; }
+        .badge-unwatched { background: #333; color: #888; }
+        .badge-movie { background: #1a3a5c; color: #7ab; }
+        .badge-series { background: #3a1a5c; color: #b7a; }
+
+        .stars { color: #f0a020; }
+
+        .card-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+
+        .rate-inline {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .rate-inline input { margin-bottom: 0; }
+        .rate-inline input[type=number] { width: 60px; }
+        .rate-inline input[type=text] { width: 180px; }
+
+        #empty-msg {
+            color: #555;
+            font-family: monospace;
+            font-size: 0.85rem;
+            padding: 24px 0;
+            text-align: center;
+        }
+
+        #modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 99;
+            align-items: center;
+            justify-content: center;
+        }
+        #modal.show { display: flex; }
+        #modal-box {
+            background: #222;
+            border: 1px solid #555;
+            padding: 24px;
+            max-width: 320px;
+            width: 90%;
+            font-family: monospace;
+        }
+        #modal-box p { margin-bottom: 16px; font-size: 0.9rem; color: #ccc; }
+        .modal-btns { display: flex; gap: 8px; }
+    </style>
+</head>
+<body onload="brython()">
+
+<header>
+    <h1>🎬 मेरो Watchlist</h1>
+    <span>nepali letterboxd</span>
+    <div id="key-status">not logged in</div>
+</header>
+
+<div class="container">
+
+    <div id="flash"></div>
+
+    <div class="panel">
+        <div class="panel-title">account</div>
+        <div class="reg-row">
+            <input type="text" id="reg-name" placeholder="your name — register to get an api key">
+            <button id="btn-register">register</button>
+            <button class="ghost" id="btn-forget">forget key</button>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-title">stats</div>
+        <div id="stats-row">
+            <div class="stat"><span class="stat-n" id="s-total">—</span><span class="stat-l">total</span></div>
+            <div class="stat"><span class="stat-n" id="s-watched">—</span><span class="stat-l">watched</span></div>
+            <div class="stat"><span class="stat-n" id="s-unwatched">—</span><span class="stat-l">unwatched</span></div>
+            <div class="stat"><span class="stat-n" id="s-movies">—</span><span class="stat-l">movies</span></div>
+            <div class="stat"><span class="stat-n" id="s-series">—</span><span class="stat-l">series</span></div>
+            <div class="stat"><span class="stat-n" id="s-rating">—</span><span class="stat-l">avg rating</span></div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-title">add to watchlist</div>
+        <div class="add-grid">
+            <input type="text" id="add-title" placeholder="title">
+            <select id="add-type">
+                <option value="movie">movie</option>
+                <option value="series">series</option>
+            </select>
+            <input type="text" id="add-genre" placeholder="genre (action, drama...)">
+        </div>
+        <button id="btn-add">+ add</button>
+    </div>
+
+    <div class="panel">
+        <div class="panel-title">watchlist</div>
+        <div class="filter-row">
+            <input type="text" id="search-q" placeholder="search by title...">
+            <select id="f-type">
+                <option value="">all types</option>
+                <option value="movie">movies</option>
+                <option value="series">series</option>
+            </select>
+            <select id="f-watched">
+                <option value="">all</option>
+                <option value="false">unwatched</option>
+                <option value="true">watched</option>
+            </select>
+            <button id="btn-search">search</button>
+            <button class="ghost" id="btn-reset">reset</button>
+        </div>
+        <div id="list-container">
+            <div id="empty-msg">nothing here. add something above.</div>
+        </div>
+    </div>
+
+</div>
+
+<div id="modal">
+    <div id="modal-box">
+        <p id="modal-msg">delete this item?</p>
+        <div class="modal-btns">
+            <button class="red" id="btn-confirm-del">yes, delete it</button>
+            <button class="ghost" id="btn-cancel-del">cancel</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/python" src="/static/app.py"></script>
+</body>
+</html>

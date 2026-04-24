@@ -1,2 +1,5 @@
 .venv
-watchlist.db
+*.db
+activity.log
+__pycache__/
+dist/

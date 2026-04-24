@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "resolution_week4_flameX"
+name = "resolution_week5_flameX"
 version = "0.0.1"
-dependencies = [ "fastapi[standard]", "slowapi" ] # You may need to add more here if you are using redis or something similar
+dependencies = [ "fastapi[standard]", "slowapi" ]
 
 [project.scripts]
-my-api = "resolution_week4_flameX.main:main"
+my-app = "resolution_week5_flameX.main:main"

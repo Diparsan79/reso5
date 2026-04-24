@@ -1,16 +1,34 @@
-# NEPALI LETTERBOXD API made with FASTAPI
-A personal movie & series watchlist API built with FastAPI
+# nepali letterboxd
 
-This project was fully thought and planned out by me as it also related with an issue i face day to day.This API can fix my as well as others problems.
-here are some features that i incorporated onto this project:
-1. API key auth per user
-2. Track movies & series separately
-3. Rate and review after watching
-4. Personal stats
-5. Search by title
-6. Rate limiting to prevent abuse
-7. Activity logging in background
+a simple movie/series watchlist app. dump stuff you want to watch, mark it watched, rate it.
+i wanted to make a frontend for my API that i made through the week 4 but i haven't been able to 
 
-![nepali letterboxd API](nepletterboxd.png)
+## features
 
-i'll be soon trying to connect this to a basic frontend to make it fully usable for me.
+- register for an api key (saved in local storage)
+- add movies or series with genre
+- view your full watchlist
+- filter by type or watched status
+- search by title
+- mark as watched
+- rate (1-5) + write a review (only after marking watched)
+- delete with confirmation popup
+- basic stats (total, watched, avg rating, top genre)
+
+## running
+
+```
+fastapi dev src/resolution_week5_YOUR_USERNAME/main.py
+```
+
+then open http://127.0.0.1:8000
+
+## screenshot
+
+<!-- add a screenshot here before submitting -->
+
+## built with
+
+- fastapi + sqlite (backend)
+- brython (frontend, python in the browser)
+- slowapi (rate limiting)
